@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Poluição por Petróleo e Hidrocarbonetos — Site Interativo</title>
+  <meta name="description" content="Site educativo e interativo sobre poluição por petróleo e hidrocarbonetos: simulador, quiz, atividades e mural de ideias." />
+  <style>
+    :root{
+      --bg: #0b1220; /* fundo escuro elegante */
+      --panel: #0f172a; /* slate-900 */
+      --muted: #94a3b8; /* slate-400 */
+      --text: #e5e7eb; /* gray-200 */
+      --accent: #22d3ee; /* cyan-400 */
+      --accent-2:#6366f1; /* indigo-500 */
+      --ok: #22c55e; --warn: #f59e0b; --bad: #ef4444;
+      --card: #111827; --border: #1f2937; --chip:#0b2b34;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;background:linear-gradient(180deg,var(--bg),#020617 80%);color:var(--text)}
+    a{color:var(--accent)}
+    .container{max-width:1100px;margin:0 auto;padding:0 16px}
+    header{position:sticky;top:0;z-index:40;background:rgba(2,6,23,.7);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+    .brand{display:flex;gap:10px;align-items:center;text-decoration:none;color:var(--text)}
+    .logo{width:28px;height:28px;border-radius:10px;background:conic-gradient(from 120deg at 50% 50%, var(--accent), var(--accent-2));box-shadow:0 0 20px rgba(99,102,241,.25)}
+    .links{display:flex;gap:18px;align-items:center}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:14px;border:1px solid var(--border);background:#0b1020;cursor:pointer;color:var(--text);text-decoration:none}
+    .btn.primary{background:linear-gradient(90deg,var(--accent-2),var(--accent));color:#001018;border:0;font-weight:600}
+    .btn.ghost:hover{border-color:#334155}
+    .hero{padding:56px 0 24px;border-bottom:1px solid var(--border)}
+    .hero h1{font-size:clamp(28px,4.6vw,46px);line-height:1.08;margin:0 0 10px}
+    .hero p{max-width:820px;color:var(--muted);font-size:clamp(16px,2.5vw,18px)}
+    .grid{display:grid;gap:16px}
+    @media(min-width:900px){.grid.cols-2{grid-template-columns:1fr 1fr}}
+    .card{background:linear-gradient(180deg,rgba(99,102,241,.08),rgba(34,211,238,.07));border:1px solid var(--border);border-radius:18px;padding:18px;box-shadow:0 8px 30px rgba(2,6,23,.3)}
+    h2.section{font-size:clamp(22px,3vw,30px);margin:28px 0 10px}
+    h3{margin:8px 0 6px;font-size:18px}
+    .muted{color:var(--muted)}
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{font-size:12px;border:1px solid #164e63;background:rgba(34,211,238,.08);padding:6px 10px;border-radius:999px;color:#a5f3fc}
+    /* Accordion */
+    details{background:rgba(2,6,23,.4);border:1px solid var(--border);border-radius:14px;padding:12px}
+    summary{cursor:pointer;font-weight:600}
+    /* Quiz */
+    .quiz-q{padding:12px;border-radius:12px;border:1px solid var(--border);margin:10px 0;background:#0a1222}
+    .quiz-q.correct{outline:2px solid rgba(34,197,94,.35)}
+    .quiz-q.wrong{outline:2px solid rgba(239,68,68,.35)}
+    .explain{font-size:14px;color:#cbd5e1;margin-top:6px}
+    /* Drag & drop */
+    .drag-list{display:flex;flex-wrap:wrap;gap:10px}
+    .drag-item{padding:8px 10px;border:1px dashed #334155;border-radius:12px;background:#0a1722;cursor:grab}
+    .drop{min-height:120px;border:2px dashed #374151;border-radius:14px;padding:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start}
+    .drop.ok{border-color:#065f46;background:rgba(16,185,129,.06)}
+    .drop.bad{border-color:#7c2d12;background:rgba(251,146,60,.05)}
+    /* Simulador */
+    #simuladorCanvas{width:100%;aspect-ratio:16/9;border-radius:16px;border:1px solid var(--border);background:linear-gradient(180deg,#05243a,#021621)}
+    .controls{display:grid;gap:10px;grid-template-columns:repeat(2,1fr)}
+    .controls label{font-size:14px;color:var(--muted)}
+    .controls input, .controls select{width:100%}
+    .kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .kpi .box{padding:10px;border-radius:14px;border:1px solid var(--border);background:#0c1424;text-align:center}
+    .kpi .num{font-weight:800;font-size:20px}
+    footer{margin:40px 0 80px;color:#94a3b8;text-align:center}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="#topo"><span class="logo"></span><strong>Oceano Limpo</strong></a>
+      <nav class="links">
+        <a class="btn ghost" href="#simulador">Simulador</a>
+        <a class="btn ghost" href="#quiz">Quiz</a>
+        <a class="btn ghost" href="#acoes">Jogo</a>
+        <a class="btn ghost" href="#mural">Mural</a>
+        <button id="btnTema" class="btn" title="Alternar contraste">☾ Tema</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero" id="topo">
+      <h1>Poluição por Petróleo e Hidrocarbonetos</h1>
+      <p>
+        Entenda causas, impactos e soluções — e participe! Use o <strong>simulador</strong> de derramamento,
+        faça o <strong>quiz</strong>, jogue o desafio de <strong>boas práticas</strong> e deixe suas <strong>ideias</strong> no mural.
+      </p>
+      <div class="chips" aria-hidden="true" style="margin-top:10px">
+        <span class="chip">#derrames</span>
+        <span class="chip">#meioAmbiente</span>
+        <span class="chip">#hidrocarbonetos</span>
+        <span class="chip">#soluções</span>
+      </div>
+    </section>
+
+    <section class="grid cols-2">
+      <div class="card">
+        <h2 class="section">O problema em 3 pontos</h2>
+        <details open>
+          <summary>1) O que é?</summary>
+          <p class="muted">Contaminação de solos e águas por petróleo bruto ou derivados (diesel, gasolina, óleos, graxas, plásticos). Pode surgir de vazamentos, operações portuárias, acidentes em plataformas e descartes inadequados.</p>
+        </details>
+        <details>
+          <summary>2) Por que é grave?</summary>
+          <p class="muted">Forma filmes na superfície da água, reduz troca gasosa, afeta aves e mamíferos (perda de isolamento térmico), intoxica organismos e pode persistir por anos nos sedimentos.</p>
+        </details>
+        <details>
+          <summary>3) O que funciona?</summary>
+          <p class="muted">Prevenção (manutenção e fiscalização), contenção com barreiras, recolhimento com skimmers, biorremediação, e participação social (denúncia, consumo responsável).</p>
+        </details>
+      </div>
+      <div class="card">
+        <h2 class="section">Como você pode agir</h2>
+        <ul>
+          <li>Denuncie vazamentos: procure órgãos ambientais locais.</li>
+          <li>Evite descartar óleo de cozinha na pia; armazene e entregue a pontos de coleta.</li>
+          <li>Prefira transporte coletivo/compartilhado e produtos com logística reversa.</li>
+          <li>Participe de mutirões de limpeza e de debates comunitários.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SIMULADOR -->
+    <section class="card" id="simulador" aria-labelledby="h2-sim">
+      <h2 id="h2-sim" class="section">Simulador de Derramamento</h2>
+      <p class="muted">Ajuste o volume derramado e o vento. O modelo é simplificado e serve apenas para fins educativos.</p>
+      <div class="grid cols-2" style="margin-top:10px;align-items:start">
+        <div>
+          <canvas id="simuladorCanvas" width="960" height="540" role="img" aria-label="Animação do espalhamento de óleo sobre a água"></canvas>
+          <div class="kpi" style="margin-top:10px">
+            <div class="box"><div class="muted">Área estimada</div><div id="kpiArea" class="num">–</div></div>
+            <div class="box"><div class="muted">Espessura média</div><div id="kpiEspessura" class="num">–</div></div>
+            <div class="box"><div class="muted">Índice de risco</div><div id="kpiRisco" class="num">–</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="controls">
+            <label>Volume derramado (litros)
+              <input id="inLitros" type="range" min="100" max="50000" value="5000" step="100"/>
+            </label>
+            <div style="text-align:right"><strong id="litrosOut">5.000 L</strong></div>
+            <label>Velocidade do vento (m/s)
+              <input id="inVento" type="range" min="0" max="20" value="6" step="1"/>
+            </label>
+            <div style="text-align:right"><strong id="ventoOut">6 m/s</strong></div>
+            <label>Direção do vento
+              <select id="inDirecao">
+                <option value="E">Leste →</option>
+                <option value="O">Oeste ←</option>
+                <option value="N">Norte ↑</option>
+                <option value="S">Sul ↓</option>
+              </select>
+            </label>
+            <div style="display:flex;gap:10px;grid-column:1/3;margin-top:8px">
+              <button id="btnStart" class="btn primary">▶ Iniciar</button>
+              <button id="btnPause" class="btn">⏸ Pausar</button>
+              <button id="btnReset" class="btn">⟲ Resetar</button>
+            </div>
+          </div>
+          <p class="muted" style="margin-top:10px;font-size:13px">Modelo: converte litros em área aproximada (m²) considerando espessura média inicial; vento deforma a mancha (elipse) e desloca o centro ao longo do tempo.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section class="card" id="quiz" aria-labelledby="h2-quiz">
+      <h2 id="h2-quiz" class="section">Quiz Rápido</h2>
+      <form id="quizForm">
+        <div class="quiz-q" data-answer="b">
+          <strong>1) O que melhor descreve a poluição por petróleo?</strong>
+          <label><input type="radio" name="q1" value="a"> Apenas vazamentos de plataformas.</label><br>
+          <label><input type="radio" name="q1" value="b"> Contaminação por petróleo e derivados em solos e águas.</label><br>
+          <label><input type="radio" name="q1" value="c"> Apenas resíduos plásticos.</label>
+          <div class="explain" hidden>Derivados como diesel e óleos também contam — e ocorrem em solo e água.</div>
+        </div>
+        <div class="quiz-q" data-answer="c">
+          <strong>2) Um efeito direto do óleo na superfície do mar é:</strong>
+          <label><input type="radio" name="q2" value="a"> Aumento da oxigenação.</label><br>
+          <label><input type="radio" name="q2" value="b"> Neutralização de toxinas.</label><br>
+          <label><input type="radio" name="q2" value="c"> Redução da troca gasosa e bloqueio de luz.</label>
+          <div class="explain" hidden>O filme reduz trocas gasosas e penetração de luz, afetando a cadeia alimentar.</div>
+        </div>
+        <div class="quiz-q" data-answer="a">
+          <strong>3) Qual medida é <u>preventiva</u>?</strong>
+          <label><input type="radio" name="q3" value="a"> Manutenção e inspeção de dutos e navios.</label><br>
+          <label><input type="radio" name="q3" value="b"> Uso de dispersantes em grande escala.</label><br>
+          <label><input type="radio" name="q3" value="c"> Queima controlada da mancha.</label>
+          <div class="explain" hidden>Prevenção evita o acidente; as demais são respostas emergenciais com trade-offs.</div>
+        </div>
+        <div class="quiz-q" data-answer="b">
+          <strong>4) Biorremediação é:</strong>
+          <label><input type="radio" name="q4" value="a"> Queima do óleo para eliminá-lo.</label><br>
+          <label><input type="radio" name="q4" value="b"> Uso de microrganismos para degradar hidrocarbonetos.</label><br>
+          <label><input type="radio" name="q4" value="c"> Filtração mecânica com barreiras rígidas.</label>
+          <div class="explain" hidden>Micro-organismos degradam compostos, acelerando a recuperação com condições adequadas.</div>
+        </div>
+        <div class="quiz-q" data-answer="c">
+          <strong>5) O que o cidadão pode fazer?</strong>
+          <label><input type="radio" name="q5" value="a"> Descartar óleo de cozinha na pia.</label><br>
+          <label><input type="radio" name="q5" value="b"> Ignorar pequenos vazamentos em marinas.</label><br>
+          <label><input type="radio" name="q5" value="c"> Entregar óleo usado a pontos de coleta e denunciar vazamentos.</label>
+          <div class="explain" hidden>Coleta adequada e denúncia ajudam na prevenção e resposta rápida.</div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button type="submit" class="btn primary">Corrigir</button>
+          <button type="button" id="btnResetQuiz" class="btn">Limpar</button>
+        </div>
+      </form>
+      <p id="quizScore" style="font-weight:700;margin-top:10px"></p>
+    </section>
+
+    <!-- DRAG & DROP JOGO -->
+    <section class="card" id="acoes" aria-labelledby="h2-game">
+      <h2 id="h2-game" class="section">Jogo: Boas práticas x Mitos</h2>
+      <p class="muted">Arraste cada item para o lado correto.</p>
+      <div class="grid cols-2">
+        <div>
+          <h3>Itens</h3>
+          <div id="dragList" class="drag-list" aria-describedby="dica">
+            <div class="drag-item" draggable="true" data-type="ok">Entregar óleo de cozinha a pontos de coleta</div>
+            <div class="drag-item" draggable="true" data-type="ok">Denunciar manchas de óleo</div>
+            <div class="drag-item" draggable="true" data-type="bad">Jogar óleo na pia</div>
+            <div class="drag-item" draggable="true" data-type="bad">Usar dispersante sem orientação</div>
+            <div class="drag-item" draggable="true" data-type="ok">Reduzir uso de plástico descartável</div>
+            <div class="drag-item" draggable="true" data-type="bad">Lavar areia com mangueira e sabão</div>
+          </div>
+          <small id="dica" class="muted">Dica: clique e arraste para um painel.</small>
+        </div>
+        <div>
+          <h3>Painéis</h3>
+          <div style="display:grid;gap:10px">
+            <div class="drop ok" data-accept="ok" aria-label="Boas práticas">Boas práticas</div>
+            <div class="drop bad" data-accept="bad" aria-label="Mitos/Erros">Mitos/Erros</div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:10px">
+            <button id="btnVerificar" class="btn primary">Verificar</button>
+            <button id="btnReiniciarDrag" class="btn">Reiniciar</button>
+          </div>
+          <p id="dragScore" style="font-weight:700;margin-top:8px"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MURAL -->
+    <section class="card" id="mural" aria-labelledby="h2-mural">
+      <h2 id="h2-mural" class="section">Mural de Ideias</h2>
+      <form id="muralForm" class="grid cols-2">
+        <div>
+          <label>Seu nome
+            <input name="nome" required placeholder="Ex.: Ana" style="width:100%;padding:10px;border-radius:12px;border:1px solid var(--border);background:#0a1322;color:var(--text)">
+          </label>
+        </div>
+        <div>
+          <label>Cidade
+            <input name="cidade" placeholder="Opcional" style="width:100%;padding:10px;border-radius:12px;border:1px solid var(--border);background:#0a1322;color:var(--text)">
+          </label>
+        </div>
+        <div style="grid-column:1/3">
+          <label>Ideia de solução
+            <textarea name="ideia" required rows="3" placeholder="Ex.: Programa de coleta de óleo em escolas..." style="width:100%;padding:10px;border-radius:12px;border:1px solid var(--border);background:#0a1322;color:var(--text)"></textarea>
+          </label>
+        </div>
+        <div style="grid-column:1/3;display:flex;gap:10px">
+          <button class="btn primary" type="submit">Publicar</button>
+          <button class="btn" type="button" id="btnLimparMural">Limpar tudo (local)</button>
+        </div>
+      </form>
+      <div id="muralList" style="margin-top:14px;display:grid;gap:10px"></div>
+      <small class="muted">As ideias ficam salvas apenas no seu navegador (localStorage).</small>
+    </section>
+
+    <footer>
+      Feito com ❤ para educação ambiental. | Código aberto em um único arquivo HTML.
+    </footer>
+  </main>
+
+  <script>
+    // ===== Tema =====
+    const btnTema = document.getElementById('btnTema');
+    btnTema.addEventListener('click',()=>{
+      document.documentElement.classList.toggle('alt');
+    });
+
+    // ===== Simulador =====
+    const canvas = document.getElementById('simuladorCanvas');
+    const ctx = canvas.getContext('2d');
+    const inLitros = document.getElementById('inLitros');
+    const inVento = document.getElementById('inVento');
+    const inDirecao = document.getElementById('inDirecao');
+    const outL = document.getElementById('litrosOut');
+    const outV = document.getElementById('ventoOut');
+    const kpiArea = document.getElementById('kpiArea');
+    const kpiEsp = document.getElementById('kpiEspessura');
+    const kpiRisco = document.getElementById('kpiRisco');
+
+    let state = {
+      litros: +inLitros.value,
+      vento: +inVento.value,
+      dir: inDirecao.value,
+      t: 0, running: false, raf: null
+    };
+
+    function formatNumber(n){return n.toLocaleString('pt-BR')}
+
+    function drawBackground(){
+      const g = ctx.createLinearGradient(0,0,0,canvas.height);
+      g.addColorStop(0,'#04304c');
+      g.addColorStop(1,'#031a28');
+      ctx.fillStyle = g; ctx.fillRect(0,0,canvas.width,canvas.height);
+      // pequenas "ondas"
+      ctx.globalAlpha = 0.12; ctx.fillStyle = '#0ea5e9';
+      for(let i=0;i<40;i++){
+        const y = (i*14 + (state.t*12)%14)%canvas.height;
+        ctx.fillRect(0,y,canvas.width,2);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function litrosParaArea(l){
+      // modelo educativo: área (m²) ≈ (l / 0.002) com espessura inicial média 2 mm -> 0.002 m
+      return l / 0.002; // m²
+    }
+
+    function updateKPIs(a, esp){
+      kpiArea.textContent = formatNumber(Math.round(a)) + ' m²';
+      kpiEsp.textContent = (esp*1000).toFixed(1) + ' mm';
+      const risco = Math.min(100, Math.round((state.vento*3 + state.litros/500)/2));
+      kpiRisco.textContent = risco + '/100';
+    }
+
+    function drawOil(){
+      // elipse baseada em área e vento
+      const area = litrosParaArea(state.litros) * (1 + state.t*0.02); // cresce com o tempo
+      const espessura = Math.max(0.0005, 0.002 - state.t*0.0001); // fica mais fina
+      updateKPIs(area, espessura);
+
+      // raio base (r) de um círculo: area = pi*r^2 -> r = sqrt(area/pi)
+      const r = Math.sqrt(area/Math.PI);
+      // converter metros para pixels (escala fictícia)
+      const m2px = 0.02; // 1 m = 0.02 px (apenas para visual)
+      let rx = r*m2px; let ry = r*m2px;
+
+      // vento deforma a elipse
+      const deform = 1 + state.vento*0.06;
+      if(state.dir==='E' || state.dir==='O') rx *= deform; else ry *= deform;
+
+      // deslocamento do centro
+      const shift = state.vento * state.t * 0.8; // px
+      let cx = canvas.width/2, cy = canvas.height/2;
+      if(state.dir==='E') cx += shift;
+      if(state.dir==='O') cx -= shift;
+      if(state.dir==='N') cy -= shift;
+      if(state.dir==='S') cy += shift;
+
+      // gradiente oleoso
+      const grd = ctx.createRadialGradient(cx,cy,Math.min(rx,ry)*0.1,cx,cy,Math.max(rx,ry));
+      grd.addColorStop(0,'rgba(251,191,36,0.4)'); // reflexo âmbar
+      grd.addColorStop(0.4,'rgba(30,41,59,0.7)');
+      grd.addColorStop(1,'rgba(2,6,23,0.0)');
+
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2);
+      ctx.fill();
+
+      // setas do vento
+      ctx.strokeStyle = 'rgba(34,211,238,0.8)';
+      ctx.lineWidth = 2; ctx.beginPath();
+      const ax = canvas.width-120, ay = 40; ctx.moveTo(ax,ay);
+      if(state.dir==='E') ctx.lineTo(ax+50,ay);
+      if(state.dir==='O') ctx.lineTo(ax-50,ay);
+      if(state.dir==='N') ctx.lineTo(ax,ay-50);
+      if(state.dir==='S') ctx.lineTo(ax,ay+50);
+      ctx.stroke();
+    }
+
+    function frame(){
+      drawBackground();
+      drawOil();
+      if(state.running){ state.t += 0.05; state.raf = requestAnimationFrame(frame); }
+    }
+
+    function resetSim(){ state.t = 0; cancelAnimationFrame(state.raf); state.running=false; frame(); }
+
+    // Listeners
+    inLitros.addEventListener('input', e=>{ state.litros = +e.target.value; outL.textContent = formatNumber(state.litros) + ' L'; resetSim(); });
+    inVento.addEventListener('input', e=>{ state.vento = +e.target.value; outV.textContent = state.vento + ' m/s'; resetSim(); });
+    inDirecao.addEventListener('change', e=>{ state.dir = e.target.value; resetSim(); });
+    document.getElementById('btnStart').addEventListener('click',()=>{ if(!state.running){ state.running=true; frame(); } });
+    document.getElementById('btnPause').addEventListener('click',()=>{ state.running=false; });
+    document.getElementById('btnReset').addEventListener('click', resetSim);
+
+    // start
+    resetSim();
+
+    // ===== Quiz =====
+    const quizForm = document.getElementById('quizForm');
+    const quizScore = document.getElementById('quizScore');
+    const btnResetQuiz = document.getElementById('btnResetQuiz');
+
+    quizForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      let correct = 0; let total = 0;
+      document.querySelectorAll('.quiz-q').forEach(q=>{
+        total++;
+        const ans = q.dataset.answer;
+        const name = q.querySelector('input').name;
+        const checked = quizForm.querySelector(`input[name="${name}"]:checked`);
+        q.classList.remove('correct','wrong');
+        const explain = q.querySelector('.explain'); explain.hidden = true;
+        if(checked){
+          if(checked.value===ans){ correct++; q.classList.add('correct'); }
+          else { q.classList.add('wrong'); explain.hidden = false; }
+        } else { q.classList.add('wrong'); }
+      });
+      quizScore.textContent = `Você acertou ${correct} de ${total}.`;
+    });
+    btnResetQuiz.addEventListener('click', ()=>{
+      quizForm.reset(); quizScore.textContent='';
+      document.querySelectorAll('.quiz-q').forEach(q=>{ q.classList.remove('correct','wrong'); q.querySelector('.explain').hidden = true; });
+    });
+
+    // ===== Drag & Drop =====
+    const dragList = document.getElementById('dragList');
+    const drops = document.querySelectorAll('.drop');
+    let dragEl = null;
+
+    function onDragStart(e){ dragEl = e.target; e.dataTransfer.setData('text/plain', dragEl.textContent); }
+    function onDragOver(e){ e.preventDefault(); }
+    function onDrop(e){ e.preventDefault(); if(!dragEl) return; e.currentTarget.appendChild(dragEl); }
+
+    dragList.querySelectorAll('.drag-item').forEach(el=>{
+      el.addEventListener('dragstart', onDragStart);
+    });
+    drops.forEach(d=>{ d.addEventListener('dragover', onDragOver); d.addEventListener('drop', onDrop); });
+
+    document.getElementById('btnVerificar').addEventListener('click',()=>{
+      let score=0, total=0;
+      document.querySelectorAll('.drag-item').forEach(i=>{ total++; const parent=i.parentElement; const expect = parent.dataset.accept; if(i.dataset.type===expect) score++; });
+      document.getElementById('dragScore').textContent = `Acertos: ${score}/${total}`;
+    });
+    document.getElementById('btnReiniciarDrag').addEventListener('click',()=>{
+      const items = Array.from(document.querySelectorAll('.drag-item'));
+      items.forEach(i=>dragList.appendChild(i));
+      document.getElementById('dragScore').textContent = '';
+    });
+
+    // ===== Mural =====
+    const muralForm = document.getElementById('muralForm');
+    const muralList = document.getElementById('muralList');
+    const KEY = 'mural-ideias';
+
+    function loadMural(){
+      muralList.innerHTML = '';
+      const data = JSON.parse(localStorage.getItem(KEY)||'[]');
+      data.forEach((post, idx)=>{
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:center">
+            <div>
+              <strong>${post.nome}</strong> <span class="muted">${post.cidade? '• '+post.cidade:''}</span>
+              <p style="margin:6px 0 0">${post.ideia}</p>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="btn" data-like="${idx}">👍 <span>${post.likes||0}</span></button>
+              <button class="btn" data-del="${idx}">🗑</button>
+            </div>
+          </div>`;
+        muralList.appendChild(card);
+      });
+    }
+
+    muralForm.addEventListener('submit',(e)=>{
+      e.preventDefault();
+      const fd = new FormData(muralForm);
+      const post = { nome: fd.get('nome'), cidade: fd.get('cidade'), ideia: fd.get('ideia'), likes:0, ts: Date.now() };
+      const arr = JSON.parse(localStorage.getItem(KEY)||'[]');
+      arr.unshift(post); localStorage.setItem(KEY, JSON.stringify(arr));
+      muralForm.reset(); loadMural();
+    });
+
+    document.getElementById('btnLimparMural').addEventListener('click',()=>{
+      if(confirm('Isso removerá todas as ideias salvas localmente. Continuar?')){ localStorage.removeItem(KEY); loadMural(); }
+    });
+
+    muralList.addEventListener('click',(e)=>{
+      const likeIdx = e.target.closest('[data-like]')?.dataset.like;
+      const delIdx = e.target.closest('[data-del]')?.dataset.del;
+      const arr = JSON.parse(localStorage.getItem(KEY)||'[]');
+      if(likeIdx!==undefined){ arr[+likeIdx].likes=(arr[+likeIdx].likes||0)+1; localStorage.setItem(KEY, JSON.stringify(arr)); loadMural(); }
+      if(delIdx!==undefined){ arr.splice(+delIdx,1); localStorage.setItem(KEY, JSON.stringify(arr)); loadMural(); }
+    });
+
+    loadMural();
+  </script>
+</body>
+</html>
+
